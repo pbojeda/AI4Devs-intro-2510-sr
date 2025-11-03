@@ -2,6 +2,9 @@
 
 Una pequeña aplicación web que invierte el orden de una cadena de texto usando **HTML** y **JavaScript** sin frameworks.
 
+## Desarrollador
+Pablo Eduardo Ojeda Vasco
+
 ## 📁 Estructura del proyecto
 
 ```text
