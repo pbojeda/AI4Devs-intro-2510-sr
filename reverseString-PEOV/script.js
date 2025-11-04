@@ -1,10 +1,6 @@
-// script.js
-
-// Referencias a elementos del DOM
-const textInput = document.getElementById("textInput");
-const reverseBtn = document.getElementById("reverseBtn");
-const resultBox = document.getElementById("result");
-const instructions = document.getElementById("instructions");
+// ==============================
+// 1. LÓGICA PURA (sin DOM)
+// ==============================
 
 /**
  * Invierte una cadena de texto.
@@ -16,57 +12,109 @@ function reverseString(text) {
 }
 
 /**
- * Actualiza las instrucciones que ve el usuario según la longitud.
+ * Devuelve las instrucciones adecuadas según la longitud.
+ * Esta parte es lógica, no toca el DOM.
  * @param {number} length
+ * @returns {string}
  */
-function updateInstructions(length) {
+function getInstructionMessage(length) {
   if (length < 2) {
-    instructions.textContent = "Escribe al menos 2 caracteres para activar el botón.";
-  } else if (length < 4) {
-    instructions.textContent = "Ahora puedes pulsar el botón para invertir la cadena.";
-  } else {
-    instructions.textContent = "Inversión automática activada.";
+    return "Escribe al menos 2 caracteres para ver el resultado.";
   }
+  if (length < 4) {
+    return "Puedes pulsar el botón o seguir escribiendo.";
+  }
+  return "Inversión automática activada.";
 }
 
 /**
- * Controla la activación/desactivación del botón.
+ * Determina si el botón debe estar habilitado.
  * @param {number} length
+ * @returns {boolean}
  */
-function toggleButton(length) {
-  reverseBtn.disabled = length < 2;
+function isButtonEnabled(length) {
+  return length >= 2;
 }
 
 /**
- * Muestra el resultado invertido en pantalla.
+ * Determina si debemos mostrar el resultado en el cuadro.
+ * En este ejercicio hemos decidido que:
+ * - con 2 o más caracteres, siempre mostramos el resultado actual
+ *   (así se arregla el problema al pasar de 4 → 3 → 2)
+ * @param {number} length
+ * @returns {boolean}
+ */
+function shouldShowResult(length) {
+  return length >= 2;
+}
+
+// ==============================
+// 2. TESTS SENCILLOS DE LA LÓGICA
+// (esto lo puedes quitar en producción)
+// ==============================
+(function runTests() {
+  console.assert(reverseString("Pablo") === "olbaP", "reverseString debería invertir 'Pablo'");
+  console.assert(reverseString("") === "", "reverseString debería soportar cadena vacía");
+  console.assert(getInstructionMessage(0).includes("2 caracteres"), "mensaje para <2");
+  console.assert(isButtonEnabled(2) === true, "botón debe activarse con 2");
+  console.assert(shouldShowResult(2) === true, "debe mostrar resultado con 2");
+  console.log("✅ Tests de lógica ejecutados.");
+})();
+
+// ==============================
+// 3. VISTA / DOM
+// ==============================
+
+const textInput = document.getElementById("textInput");
+const reverseBtn = document.getElementById("reverseBtn");
+const resultBox = document.getElementById("result");
+const instructions = document.getElementById("instructions");
+
+/**
+ * Pinta el resultado invertido en el DOM.
  * @param {string} original
  */
 function renderReversed(original) {
   resultBox.textContent = reverseString(original);
 }
 
-// Escuchar lo que escribe el usuario
-textInput.addEventListener("input", function () {
+/**
+ * Limpia el resultado en el DOM.
+ */
+function clearResult() {
+  resultBox.textContent = "";
+}
+
+/**
+ * Sincroniza la UI en función del valor actual del input.
+ */
+function updateUIFromInput() {
   const value = textInput.value;
   const length = value.length;
 
-  // Actualizar instrucciones y botón
-  updateInstructions(length);
-  toggleButton(length);
+  // 1. instrucciones
+  instructions.textContent = getInstructionMessage(length);
 
-  // Si hay 4 o más caracteres, invertir automáticamente
-  if (length >= 4) {
+  // 2. botón habilitado o no
+  reverseBtn.disabled = !isButtonEnabled(length);
+
+  // 3. resultado
+  if (shouldShowResult(length)) {
+    // Aquí está el arreglo clave:
+    // aunque bajemos de 4 a 3 o 2, seguimos mostrando el texto invertido actual.
     renderReversed(value);
-  } else if (length === 0) {
-    // limpiar si se borra todo
-    resultBox.textContent = "";
+  } else {
+    clearResult();
   }
-});
+}
 
-// Acción del botón
+// Evento de escritura
+textInput.addEventListener("input", updateUIFromInput);
+
+// Evento del botón (sigue teniendo sentido si el usuario no quiere auto)
 reverseBtn.addEventListener("click", function () {
   const value = textInput.value;
-  if (value.length >= 2) {
+  if (shouldShowResult(value.length)) {
     renderReversed(value);
   }
 });

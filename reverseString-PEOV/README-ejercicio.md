@@ -1,71 +1,167 @@
-# Reverse String Web App
+# 🪞 Reverse String Web App
 
-Una pequeña aplicación web que invierte el orden de una cadena de texto usando **HTML** y **JavaScript** sin frameworks.
-
-## Desarrollador
-Pablo Eduardo Ojeda Vasco
-
-## 📁 Estructura del proyecto
-
-```text
-.
-├── index.html      # Estructura de la página
-├── script.js       # Lógica de inversión y control de eventos
-└── reversestring-example.png  # Imagen de ejemplo (opcional)
-```
-
-## ✅ Funcionalidades
-
-1. **Campo de texto** donde el usuario escribe la palabra o frase.
-2. **Botón** para invertir la cadena cuando hay **al menos 2 caracteres**.
-3. A partir de **4 caracteres**, la inversión se hace **automáticamente sin pulsar** el botón.
-4. Mensajes en pantalla indicando cómo usar la aplicación.
-
-## 🚦Reglas de validación
-
-- Si el usuario introduce **menos de 2 caracteres**, el botón se **desactiva**.
-- Si el usuario introduce **2 o 3 caracteres**, el botón se **activa** y se debe pulsar para invertir.
-- Si el usuario introduce **4 o más caracteres**, el texto se invierte **en tiempo real**.
-
-## 🧠 Lógica principal
-
-La lógica está en `script.js` y hace lo siguiente:
-
-1. Escucha los cambios del campo de texto.
-2. Según la longitud del texto:
-   - Desactiva o activa el botón.
-   - Llama a la función de inversión.
-3. La función de inversión usa:
-   ```js
-   function reverseString(text) {
-     return text.split("").reverse().join("");
-   }
-   ```
-
-## 🛠 Instalación y uso
-
-1. Coloca los archivos `index.html` y `script.js` en la misma carpeta.
-2. Abre `index.html` en tu navegador.
-3. Escribe un texto y:
-   - Si es corto (2-3 letras), pulsa el botón.
-   - Si es más largo (4+ letras), verás el resultado automáticamente.
-
-## 🧪 Ejemplo
-
-- Entrada: `Pablo`
-- Salida: `olbaP`
-
-## 📸 Imagen de ejemplo
-
-Si tienes el archivo `reversestring-example.png`, puedes referenciarlo en el HTML o en la documentación.
-
-## ✨ Mejoras posibles
-
-- Añadir estilos con CSS.
-- Permitir copiar el resultado.
-- Mostrar un contador de caracteres.
-- Añadir tests unitarios sobre la función `reverseString`.
+Una aplicación web sencilla en **HTML + JavaScript** que invierte el orden de una cadena de texto de forma dinámica, con buena accesibilidad, separación de lógica y vista, y tests básicos integrados.
 
 ---
 
-© 2025 - Ejemplo de app simple en JavaScript.
+## 📁 Estructura del proyecto
+
+```
+.
+├── index.html                # Interfaz principal (HTML + accesibilidad)
+├── script.js                 # Lógica, control de eventos y tests
+├── reversestring-example.png # Imagen opcional de ejemplo
+└── README.md                 # Este documento
+```
+
+---
+
+## 🚀 Funcionalidades
+
+1. **Campo de texto interactivo**: el usuario puede escribir libremente una cadena.
+2. **Botón de inversión**: se activa automáticamente a partir de **2 caracteres**.
+3. **Modo automático**: a partir de **4 caracteres**, el texto se invierte en tiempo real.
+4. **Mensajes de ayuda**: guían al usuario según la longitud del texto.
+5. **Accesibilidad mejorada**: con etiqueta `<label>` oculta pero legible por lectores de pantalla.
+6. **Tests básicos** en JavaScript usando `console.assert`.
+
+---
+
+## 🧩 Lógica de funcionamiento
+
+La lógica se ha separado del DOM para facilitar pruebas y mantener un código limpio.
+
+### Funciones puras (sin acceso al DOM)
+
+```js
+function reverseString(text) {
+  return text.split("").reverse().join("");
+}
+
+function getInstructionMessage(length) {
+  if (length < 2) return "Escribe al menos 2 caracteres para ver el resultado.";
+  if (length < 4) return "Puedes pulsar el botón o seguir escribiendo.";
+  return "Inversión automática activada.";
+}
+
+function isButtonEnabled(length) {
+  return length >= 2;
+}
+
+function shouldShowResult(length) {
+  return length >= 2; // Muestra resultado si hay 2 o más caracteres
+}
+```
+
+### Funciones de vista (DOM)
+
+- **renderReversed(original)** → muestra la cadena invertida en pantalla.  
+- **clearResult()** → limpia el cuadro de resultado.  
+- **updateUIFromInput()** → sincroniza instrucciones, botón y resultado con el estado actual del input.
+
+---
+
+## 🧠 Lógica de interacción
+
+| Caso | Acción del usuario | Resultado esperado |
+|------|--------------------|--------------------|
+| 0-1 caracteres | Escribe poco texto | Botón desactivado, sin resultado |
+| 2-3 caracteres | Escribe texto corto | Botón activado, muestra texto invertido al pulsarlo |
+| 4+ caracteres | Escribe texto largo | Texto invertido automáticamente en tiempo real |
+| Borrar de 4 → 3 o 2 | Reduce el texto | Resultado se actualiza sin quedarse vacío |
+
+---
+
+## ✅ Tests incluidos
+
+Ejecutados automáticamente al cargar la página (en consola):
+
+```js
+console.assert(reverseString("Pablo") === "olbaP", "Debe invertir correctamente 'Pablo'");
+console.assert(reverseString("") === "", "Debe soportar cadena vacía");
+console.assert(getInstructionMessage(0).includes("2 caracteres"), "Mensaje correcto para <2 caracteres");
+console.assert(isButtonEnabled(2) === true, "El botón debe activarse con 2 caracteres");
+console.assert(shouldShowResult(2) === true, "Debe mostrar resultado con 2 caracteres");
+```
+
+En la consola del navegador se mostrará:
+
+```
+✅ Tests de lógica ejecutados.
+```
+
+---
+
+## 🧱 Accesibilidad
+
+Se incluye un `<label>` oculto visualmente pero accesible:
+
+```html
+<label for="textInput" class="sr-only">Texto a invertir</label>
+```
+
+Y el estilo asociado:
+
+```css
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+```
+
+---
+
+## 🖥️ Cómo usar
+
+1. Abre `index.html` en tu navegador.  
+2. Escribe cualquier texto.  
+3. Observa cómo el resultado se invierte automáticamente (o pulsa el botón si hay 2-3 caracteres).
+
+---
+
+## 🧪 Ejemplo
+
+| Entrada | Salida |
+|----------|---------|
+| `Pablo`  | `olbaP` |
+| `Hola`   | `aloH`  |
+| `AI`     | `IA`    |
+
+---
+
+## 🧰 Tecnologías utilizadas
+
+- **HTML5**
+- **JavaScript (ES6+)**
+- **CSS básico**
+- Sin frameworks ni librerías externas
+
+---
+
+## 🔍 Posibles mejoras futuras
+
+- Estilos CSS personalizados o modo oscuro.
+- Copiar resultado con un clic.
+- Mostrar contador de caracteres.
+- Exportar los tests a un entorno tipo Jest.
+
+---
+
+## 🪄 Créditos
+
+Proyecto educativo desarrollado como ejemplo de buenas prácticas en **desarrollo web frontend**:
+- Accesibilidad
+- Separación de responsabilidades
+- Código limpio y comentado
+- Pruebas básicas integradas
+
+---
+
+© 2025 — Ejemplo didáctico de inversión de cadenas en JavaScript.

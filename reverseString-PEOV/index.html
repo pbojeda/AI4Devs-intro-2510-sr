@@ -25,6 +25,20 @@
       display: flex;
       gap: 8px;
       margin-bottom: 1rem;
+      align-items: center;
+      position: relative;
+    }
+    /* label accesible pero oculto visualmente */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
     input[type="text"] {
       flex: 1;
@@ -46,7 +60,7 @@
       padding: 10px 12px;
       border-radius: 4px;
       min-height: 32px;
-      font-family: ui-monospace, SFMono-Regular, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
     .label {
       font-weight: 600;
@@ -63,11 +77,12 @@
 <body>
   <h1>Inversor de cadenas</h1>
   <p class="helper">
-    Introduce un texto. Con <strong>2 o 3 caracteres</strong> tendrás que pulsar el botón.
-    Con <strong>4 o más</strong>, se invierte automáticamente.
+    Introduce un texto. Con <strong>2 o más caracteres</strong> verás el resultado invertido.
+    Con <strong>4 o más</strong> se entiende que quieres modo “en vivo”.
   </p>
 
   <div class="form-row">
+    <label for="textInput" class="sr-only">Texto a invertir</label>
     <input
       type="text"
       id="textInput"
@@ -78,7 +93,7 @@
     <button id="reverseBtn" disabled>Invertir</button>
   </div>
   <p class="hint" id="instructions">
-    Escribe al menos 2 caracteres para activar el botón.
+    Escribe al menos 2 caracteres para ver el resultado.
   </p>
 
   <div>
